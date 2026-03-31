@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản lý trung tâm</title>
+</head>
+
+<body>
+
+    <h1>📚 Quản lý trung tâm tiếng Anh</h1>
+
+    <h2>👨‍🎓 Danh sách học sinh</h2>
+    <ul id="studentList"></ul>
+
+    <h3>➕ Thêm học sinh</h3>
+    <input id="nameInput" type="text" placeholder="Nhập tên học sinh">
+    <button onclick="addStudent()">Thêm</button>
+
+    <script>
+        let students = [];
+
+        function addStudent() {
+            let name = document.getElementById("nameInput").value;
+
+            if (name === "") {
+                alert("Nhập tên đi!");
+                return;
+            }
+
+            students.push(name);
+
+            document.getElementById("nameInput").value = "";
+
+            let list = document.getElementById("studentList");
+            let li = document.createElement("li");
+            li.innerText = name;
+            list.appendChild(li);
+        }
+    </script>
+
+</body>
+</html>
