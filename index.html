@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quản lý trung tâm</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background-color: #f5f6fa;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .card {
+            background: white;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .danger {
+            background-color: #e74c3c;
+        }
+
+        .danger:hover {
+            background-color: #c0392b;
+        }
+
+        .money {
+            background-color: #27ae60;
+        }
+
+        .money:hover {
+            background-color: #1e8449;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>📚 Quản lý trung tâm tiếng Anh</h1>
+
+    <div class="card">
+        <h2>📊 Tổng học sinh: <span id="total">0</span></h2>
+    </div>
+
+    <div class="card">
+        <h2>👨‍🎓 Danh sách học sinh</h2>
+        <ul id="studentList"></ul>
+    </div>
+
+    <div class="card">
+        <h3>➕ Thêm học sinh</h3>
+        <input id="nameInput" type="text" placeholder="Tên học sinh">
+        <select id="classSelect"></select>
+        <button onclick="addStudent()">Thêm</button>
+    </div>
+
+    <div class="card">
+        <h2>📚 Quản lý lớp</h2>
+        <input id="classInput" type="text" placeholder="Tên lớp">
+        <button onclick="addClass()">Thêm lớp</button>
+        <ul id="classList"></ul>
+    </div>
+
+    <script>
+        let students = JSON.parse(localStorage.getItem("students")) || [];
+        let classes = JSON.parse(localStorage.getItem("classes")) || [];
+
+        function addClass() {
+            let className = document.getElementById("classInput").value;
+            if (className === "") return;
+
+            classes.push(className);
+            document.getElementById("classInput").value = "";
+            render();
+        }
+
+        function addStudent() {
+            let name = document.getElementById("nameInput").value;
+            let className = document.getElementById("classSelect").value;
+
+            if (name === "") return;
+
+            students.push({
+                name,
+                className,
+                present: false,
+                paid: false
+            });
+
+            document.getElementById("nameInput").value = "";
+            render();
+        }
+
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            render();
+        }
+
+        function toggleAttendance(index) {
+            students[index].present = !students[index].present;
+            render();
+        }
+
+        function togglePayment(index) {
+            students[index].paid = !students[index].paid;
+            render();
+        }
+
+        function render() {
+            let list = document.getElementById("studentList");
+            list.innerHTML = "";
+
+            students.forEach(function(student, index) {
+                let li = document.createElement("li");
+
+                let attendance = student.present ? "✅ Có mặt" : "❌ Vắng";
+                let payment = student.paid ? "💰 Đã đóng" : "⚠️ Chưa đóng";
+
+                li.innerHTML =
+                    "<input type='checkbox' " + (student.present ? "checked" : "") +
+                    " onclick='toggleAttendance(" + index + ")'>" +
+
+                    " " + student.name + " (" + student.className + ") | " +
+                    attendance + " | " + payment +
+
+                    " <button class='money' onclick='togglePayment(" + index + ")'>💰</button>" +
+                    " <button class='danger' onclick='deleteStudent(" + index + ")'>❌</button>";
+
+                list.appendChild(li);
+            });
+
+            document.getElementById("total").innerText = students.length;
+
+            let classSelect = document.getElementById("classSelect");
+            classSelect.innerHTML = "";
+
+            classes.forEach(function(c) {
+                let option = document.createElement("option");
+                option.value = c;
+                option.innerText = c;
+                classSelect.appendChild(option);
+            });
+
+            let classList = document.getElementById("classList");
+            classList.innerHTML = "";
+
+            classes.forEach(function(c) {
+                let count = students.filter(s => s.className === c).length;
+                let li = document.createElement("li");
+                li.innerText = c + " - " + count + " học sinh";
+                classList.appendChild(li);
+            });
+
+            localStorage.setItem("students", JSON.stringify(students));
+            localStorage.setItem("classes", JSON.stringify(classes));
+        }
+
+        render();
+    </script>
+
+</body>
+</html>
